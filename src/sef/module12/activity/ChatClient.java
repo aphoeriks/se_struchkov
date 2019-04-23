@@ -20,7 +20,7 @@ public class ChatClient extends Thread{
 
             try {
 
-                this.socket = new Socket(InetAddress.getLocalHost(), 9999);
+                this.socket = new Socket(InetAddress.getLocalHost(), 9998);
                 this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.out = new PrintWriter(socket.getOutputStream(), true);
 

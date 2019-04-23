@@ -1,5 +1,6 @@
 package sef.module12.activity;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +26,16 @@ public class Chat {
 			this.users.add(user);
 			System.out.println("User " + user.getName() + " loggon" + System.lineSeparator());
 		}
-		
 		this.chat.add(message);
+		PrintWriter out = null;
+		for (User u:
+			 users ) {
+			if(u.getName().equals(user.getName())){
+				continue;
+			}
+			out = new PrintWriter(u.getOStream(), true);
+			out.println(user.getName()+ " : " + message);
+		}
 		
 		System.out.println(user.getName() + ": " + this.chat.get(this.chat.size() - 1) + System.lineSeparator());
 	}

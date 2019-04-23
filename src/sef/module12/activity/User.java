@@ -1,19 +1,18 @@
 package sef.module12.activity;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class User implements Runnable {
 	
 	private String name;
 	
-	private InputStreamReader stream;
+	private InputStreamReader istream;
+	private OutputStreamWriter ostream;
 	
-	public User(String name, InputStream stream) {
-		this.stream = new InputStreamReader(stream);
+	public User(String name, InputStream stream, OutputStream ostream) {
+		this.istream = new InputStreamReader(stream);
 		this.name = name;
+		this.ostream = new OutputStreamWriter(ostream);
 	}
 
 	@Override
@@ -23,7 +22,7 @@ public class User implements Runnable {
 	
 	public void start() {
 		try {
-			BufferedReader in = new BufferedReader(this.stream);
+			BufferedReader in = new BufferedReader(this.istream);
 			
 			String line="";
 			while ((line= in.readLine()) != null) {
@@ -42,5 +41,6 @@ public class User implements Runnable {
 	public String getName() {
 		return name;
 	}
+	public OutputStreamWriter getOStream() {return ostream;}
 
 }

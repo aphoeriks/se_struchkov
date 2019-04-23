@@ -1,10 +1,12 @@
 package sef.module12.activity;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ChatServer {
 	
@@ -16,7 +18,7 @@ public class ChatServer {
 		Socket client =null;
 		PrintWriter out=null;
 		boolean endless=true;
-		int port=9999;
+		int port=9998;
 		
 		try {
 			server = new ServerSocket(port, 50, InetAddress.getLocalHost());
@@ -30,7 +32,7 @@ public class ChatServer {
 				
 				System.out.println("Got a connection from " + client.getInetAddress());
 				
-				User user = new User("user_" + i++, client.getInputStream());
+				User user = new User("user_" + i++, client.getInputStream(), client.getOutputStream());
 				
 				Thread thread = new Thread(user);
 				thread.start();
@@ -41,6 +43,10 @@ public class ChatServer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
+			System.out.println("press any key to end");
+			Scanner in = new Scanner(System.in);
+			in.next();
+			System.exit(0);
 			try{
 				if(out != null)
 					out.close();
