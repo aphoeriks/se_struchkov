@@ -78,8 +78,8 @@ public class ProjectRepositoryImpl implements ProjectRepository {
 		List<Project> results = new ArrayList<Project>();
 		try {
 			PreparedStatement pStmt = conn
-					.prepareStatement("select p.* from Project p join Employee_Project_Map epm on " + 
-									  "p.ID = epm.PROJECTID where epm.EMPLOYEEID = ? order by p.ID ASC");
+					.prepareStatement("select p.* from Project p join Employee_Project_Map e on " +
+									  "p.ID = e.PROJECT_ID where e.EMPLOYEE_ID = ? order by p.ID ASC");
 			pStmt.setInt(1, employeeID);
 
 			ResultSet rs = pStmt.executeQuery();
@@ -107,26 +107,20 @@ public class ProjectRepositoryImpl implements ProjectRepository {
 		
 		try {
 			PreparedStatement pStmt = conn
-					.prepareStatement("insert into project (NAME, DESCRIPTION) VALUES (?,?)");
+					.prepareStatement("insert into project (ID, NAME, DESCRIPTION) VALUES (PROJECT_SEQ.NEXTVAL,?,?)");
 
 			pStmt.setString(1, project.getProjectName());
 			pStmt.setString(2, project.getProjectDescription());
 
-			int rows = pStmt.executeUpdate();
-			
-			conn.commit();
-			if (rows == 1) {
-				pStmt = conn
-					.prepareStatement("select LAST_INSERT_ID()");
-
-				ResultSet rs = pStmt.executeQuery();
-				if (rs.next()){
-					projectID = rs.getInt(1);
-				}
-				
-				rs.close();
+			pStmt.executeUpdate();
+			ResultSet rs = pStmt.getGeneratedKeys();
+			if(rs.next()){
+				projectID = rs.getInt(1);
 			}
 			
+			conn.commit();
+				
+			rs.close();
 			pStmt.close();
 
 		} catch (SQLException ex) {

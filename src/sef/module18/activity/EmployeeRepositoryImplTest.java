@@ -1,18 +1,11 @@
 package sef.module18.activity;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sef.module13.activity.Account;
-import sef.module13.activity.AccountDAO;
-import sef.module13.activity.AccountDAOException;
-import sef.module13.activity.AccountDAOImpl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.List;
 
 public class EmployeeRepositoryImplTest extends TestCase {
@@ -142,15 +135,22 @@ public class EmployeeRepositoryImplTest extends TestCase {
         }
     }
 
-    public void testInsertEmployee() {
+
+
+    public void testInsertAndDeleteEmployee() {
         EmployeeRepositoryImpl employee = new EmployeeRepositoryImpl(conn);
         try {
 
-            int employeeID =  employee.insertEmployee(new EmployeeImpl(99, "Jackie", "Chan", 99));
+            int employeeID =  employee.insertEmployee(new EmployeeImpl(0, "JACKIE", "CHAN", 99));
             Employee result = employee.findEmployeeByID(employeeID);
             assertEquals(result.getFirstName().toUpperCase(), "JACKIE");
             assertEquals(result.getLastName().toUpperCase(), "CHAN");
             assertEquals(result.getProfLevel(), 99);
+            try{
+                employee.deleteEmployee(employeeID);
+            }catch (HRSSystemException e){
+                logger.error(sef.module.percentage.Percentage.setFailedCount(1, e.getMessage()));
+            }
         }catch(HRSSystemException e){
             logger.error(sef.module.percentage.Percentage.setFailedCount(1, e.getMessage()));
             fail();
@@ -164,15 +164,22 @@ public class EmployeeRepositoryImplTest extends TestCase {
     public void testUpdateEmployee() {
         EmployeeRepositoryImpl employees = new EmployeeRepositoryImpl(conn);
         try {
-
-            boolean result = employees.updateEmployee(new EmployeeImpl(181, "Jackie", "Chan", 99));
+            int employeeID =  employees.insertEmployee(new EmployeeImpl(0, "JACKIE", "CHAN", 99));
+            boolean result = employees.updateEmployee(new EmployeeImpl(-1, "UPDATED", "UPDATED", 15));
             assertFalse(result);
 
-            result = employees.updateEmployee(new EmployeeImpl(2, "Michael", "Dorn", 6));
+            result = employees.updateEmployee(new EmployeeImpl(employeeID, "UPDATED", "UPDATED", 15));
             assertTrue(result);
             if(result){
-                Employee employee = employees.findEmployeeByID(2);
-                assertEquals(6,employee.getProfLevel());
+                Employee employee = employees.findEmployeeByID(employeeID);
+                assertEquals("UPDATED",employee.getFirstName());
+                assertEquals("UPDATED",employee.getLastName());
+                assertEquals(15,employee.getProfLevel());
+            }
+            try{
+                employees.deleteEmployee(employeeID);
+            }catch (HRSSystemException e){
+                logger.error(sef.module.percentage.Percentage.setFailedCount(1, e.getMessage()));
             }
         }catch(HRSSystemException e){
             logger.error(sef.module.percentage.Percentage.setFailedCount(1, e.getMessage()));

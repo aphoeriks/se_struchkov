@@ -143,28 +143,21 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 		
 		try {
 			PreparedStatement pStmt = conn
-					.prepareStatement("insert into EMPLOYEE (FIRSTNAME, LASTNAME, PROF_LEVEL) VALUES (?,?,?)");
+					.prepareStatement("insert into EMPLOYEE (ID,FIRSTNAME, LASTNAME, PROF_LEVEL) VALUES (EMPLOYEE_SEQ.NEXTVAL,?,?,?)");
 
 			pStmt.setString(1, employee.getFirstName());
 			pStmt.setString(2, employee.getLastName());
 			pStmt.setInt(3, employee.getProfLevel());
+			pStmt.executeUpdate();
 
-			int rows = pStmt.executeUpdate();
-			
-			conn.commit();
-			if (rows == 1) {
-				pStmt = conn
-					.prepareStatement("SELECT EMPLOYEE_SEQ.CURRVAL FROM DUAL");
-
-				ResultSet rs = pStmt.executeQuery();
-				if (rs.next()){
-					employeeID = rs.getInt(1);
-				}
-				
-				rs.close();
+			ResultSet rs = pStmt.getGeneratedKeys();
+			if(rs.next()){
+				employeeID = rs.getInt(1);
 			}
+			conn.commit();
 			
 			pStmt.close();
+			rs.close();
 
 		} catch (SQLException ex) {
 			try {
@@ -218,6 +211,36 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 			}
 			throw new HRSSystemException(
 					HRSSystemException.ERROR_UPDATE_EMPLOYEE, ex);
+		}
+	}
+	public boolean deleteEmployee(int id) throws HRSSystemException{
+
+		try {
+			PreparedStatement pStmt = conn
+					.prepareStatement("DELETE FROM Employee where ID = ?");
+
+			pStmt.setInt(1, id);
+			int rows = pStmt.executeUpdate();
+
+			conn.commit();
+			pStmt.close();
+
+			if (rows == 1) {
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (SQLException ex) {
+			try {
+				conn.rollback();
+			} catch (SQLException e) {
+				throw new HRSSystemException(
+						HRSSystemException.ERROR_DELETE_EMPLOYEE, e);
+
+			}
+			throw new HRSSystemException(
+					HRSSystemException.ERROR_DELETE_EMPLOYEE, ex);
 		}
 	}
 }

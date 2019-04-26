@@ -8,6 +8,7 @@ public class HRSSystemException extends Exception {
 	public static final String ERROR_FIND_EMPLOYEE_PROJECTID="Exception occcured while finding Employee via Project ID.";
 	public static final String ERROR_INSERT_EMPLOYEE="Exception occured while inserting new Employee.";
 	public static final String ERROR_UPDATE_EMPLOYEE="Exception occured while updating an Employee.";
+	public static final String ERROR_DELETE_EMPLOYEE="Exception occured while deleting an Employee.";
 
 	
 	public static final String ERROR_FIND_PROJECT_ID="Exception occcured while finding Project via ID.";
